@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Dish } from "../types";
 import 'react-toastify/dist/ReactToastify.css';
 

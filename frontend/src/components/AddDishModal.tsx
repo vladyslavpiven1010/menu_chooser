@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { updateDish, addDish } from "../services/dishApi";
-import { Dish } from "../types";
+import { Dish, DishEatTime } from "../types";
 
 interface Props {
   onClose: () => void;
@@ -16,7 +16,10 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
     ingredients: "",
     createdBy: "",
   });
+
   const [loading, setLoading] = useState(false);
+  const [eatTimes, setEatTimes] = useState<DishEatTime[]>(initialDish?.eatTime || []);
+  const allTimes: DishEatTime[] = ['breakfast', 'lunch', 'dinner', 'supper'];
 
   const isEdit = !!initialDish;
 
@@ -29,6 +32,8 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
         ingredients: initialDish.ingredients?.join(", ") || "",
         createdBy: initialDish.createdBy || "",
       });
+
+      setEatTimes(initialDish.eatTime || []);
     } else {
       const role = localStorage.getItem("role");
       if (role) {
@@ -59,6 +64,7 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
       description,
       createdBy,
       ingredients: ingredients.split(",").map((i) => i.trim()),
+      eatTime: eatTimes,
     };
 
     setLoading(true);
@@ -127,6 +133,45 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
             value={form.ingredients}
             onChange={(e) => setForm({ ...form, ingredients: e.target.value })}
           />
+
+          <div className="mb-3">
+            <div className="flex flex-wrap gap-2">
+              {eatTimes.map((time) => (
+                <div
+                  key={time}
+                  className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                >
+                  {time}
+                  <button
+                    type="button"
+                    className="text-rose-500 hover:text-rose-700 font-bold"
+                    onClick={() => setEatTimes(eatTimes.filter((t) => t !== time))}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <select
+                className="border px-2 py-1 rounded-lg text-sm"
+                value=""
+                onChange={(e) => {
+                  const selected = e.target.value as DishEatTime;
+                  if (selected && !eatTimes.includes(selected)) {
+                    setEatTimes([...eatTimes, selected]);
+                  }
+                }}
+              >
+                <option value="">+ Add time</option>
+                {allTimes
+                  .filter((t) => !eatTimes.includes(t))
+                  .map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
 
           <div className="flex justify-end gap-2 mt-4">
             <button

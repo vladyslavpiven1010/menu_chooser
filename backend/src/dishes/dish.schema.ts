@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type DishDocument = Dish & Document;
+export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'supper' ;
 
 @Schema({ timestamps: true })
 export class Dish {
@@ -13,6 +14,9 @@ export class Dish {
 
   @Prop({ type: [String], required: true })
   ingredients: string[];
+
+  @Prop({ type: [String], default: ['breakfast'] })
+  eatTime: DishEatTime;
 
   @Prop()
   imageUrl: string;

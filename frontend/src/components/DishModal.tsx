@@ -70,6 +70,20 @@ export default function DishModal({
           ))}
         </ul>
 
+        {dish.eatTime?.length > 0 && (
+          <div className="text-gray-700 mb-2">
+            <span className="font-semibold text-gray-800">Fits for: </span>
+            {dish.eatTime.map((time: string, idx: number) => (
+              <span
+                key={idx}
+                className="inline-block bg-pink-100 text-pink-700 text-sm font-medium px-2 py-1 rounded-full mr-1"
+              >
+                {time}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="flex justify-between gap-2 flex-col sm:flex-row">
           {dish._id === chosenDishId ? (
             <button
