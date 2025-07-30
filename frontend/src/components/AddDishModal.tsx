@@ -1,21 +1,41 @@
 import { useState, useEffect } from "react";
-import { XMarkIcon } from "@heroicons/react/24/solid";
-import { addDish } from "../services/dishApi";
+import { updateDish, addDish } from "../services/dishApi";
+import { Dish } from "../types";
 
 interface Props {
   onClose: () => void;
   onDishAdded: () => void;
+  initialDish?: Dish | null;
 }
 
-export default function AddDishModal({ onClose, onDishAdded }: Props) {
+export default function AddDishModal({ onClose, onDishAdded, initialDish }: Props) {
   const [form, setForm] = useState({
     name: "",
     imageUrl: "",
     description: "",
     ingredients: "",
     createdBy: "",
-    });
+  });
   const [loading, setLoading] = useState(false);
+
+  const isEdit = !!initialDish;
+
+  useEffect(() => {
+    if (initialDish) {
+      setForm({
+        name: initialDish.name || "",
+        imageUrl: initialDish.imageUrl || "",
+        description: initialDish.description || "",
+        ingredients: initialDish.ingredients?.join(", ") || "",
+        createdBy: initialDish.createdBy || "",
+      });
+    } else {
+      const role = localStorage.getItem("role");
+      if (role) {
+        setForm((prev) => ({ ...prev, createdBy: role }));
+      }
+    }
+  }, [initialDish]);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -23,39 +43,38 @@ export default function AddDishModal({ onClose, onDishAdded }: Props) {
     }
   };
 
-  useEffect(() => {
-    const storedId = localStorage.getItem("role");
-    if (storedId) {
-      setForm((prev) => ({ ...prev, createdBy: storedId }));
-    }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const createdBy = localStorage.getItem("role") || 'admin';
 
-    const { name, imageUrl, description, ingredients } = form;
+    const { name, imageUrl, description, ingredients, createdBy } = form;
 
     if (!name || !imageUrl || !description || !ingredients) {
       alert("Please fill in all fields");
       return;
     }
 
+    const payload = {
+      name,
+      imageUrl,
+      description,
+      createdBy,
+      ingredients: ingredients.split(",").map((i) => i.trim()),
+    };
+
     setLoading(true);
+
     try {
-      await addDish({
-        name,
-        imageUrl,
-        description,
-        createdBy,
-        ingredients: form.ingredients.split(",").map((i) => i.trim()),
-      });
+      if (isEdit && initialDish) {
+        await updateDish(initialDish._id, payload);
+      } else {
+        await addDish(payload);
+      }
 
       onDishAdded();
       onClose();
     } catch (err) {
-      console.error("Failed to add dish:", err);
-      alert("Failed to add dish");
+      console.error("Failed to submit dish:", err);
+      alert("Failed to submit dish");
     } finally {
       setLoading(false);
     }
@@ -74,7 +93,9 @@ export default function AddDishModal({ onClose, onDishAdded }: Props) {
           ✕
         </button>
 
-        <h2 className="text-xl font-bold text-center text-rose-500 mb-4">Add New Dish</h2>
+        <h2 className="text-xl font-bold text-center text-rose-500 mb-4">
+          {isEdit ? "Edit Dish" : "Add New Dish"}
+        </h2>
 
         <form onSubmit={handleSubmit} className="relative w-full">
           <input
@@ -112,8 +133,9 @@ export default function AddDishModal({ onClose, onDishAdded }: Props) {
             <button
               type="submit"
               className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg"
+              disabled={loading}
             >
-              Add Dish
+              {loading ? "Saving..." : isEdit ? "Update Dish" : "Add Dish"}
             </button>
           </div>
         </form>

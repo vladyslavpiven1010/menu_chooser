@@ -21,6 +21,10 @@ export class DishService {
     return created.save();
   }
 
+  async update(id: string, updateData: Partial<Dish>) {
+    return this.dishModel.findByIdAndUpdate(id, updateData, { new: true });
+  }
+
   async delete(id: string) {
     return this.dishModel.findByIdAndDelete(id);
   }

@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type NotificationType = 'choose' | 'cancel';
+export type NotificationType = 'choose' | 'cancel' | 'update';
 
 @Schema({ timestamps: true })
 export class Notification extends Document {

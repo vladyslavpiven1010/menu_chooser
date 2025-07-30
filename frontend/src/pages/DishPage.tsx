@@ -22,6 +22,7 @@ export default function DishPage() {
   const [chosenDishId, setChosenDishId] = useState<string | null>(null);
   const [role, setRole] = useState<"girlfriend" | "admin" | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editDish, setEditDish] = useState<Dish | null>(null);
 
   const { cancelledDishIds } = useSocket();
 
@@ -35,8 +36,7 @@ export default function DishPage() {
     setDishes(data);
 
     const chosen = data.find((d: Dish) => d.chosenToday);
-    if (chosen) setChosenDishId(chosen._id);
-    else setChosenDishId(null);
+    setChosenDishId(chosen ? chosen._id : null);
   };
 
   const handleDishChosen = async (dishId: string) => {
@@ -67,6 +67,24 @@ export default function DishPage() {
     }
   };
 
+  const handleDeleteDish = async (dishId: string) => {
+    try {
+      await deleteDish(dishId);
+      toast.success("Dish deleted!");
+      setSelectedDish(null);
+      fetchDishes();
+    } catch (err) {
+      toast.error("Failed to delete dish");
+      console.error(err);
+    }
+  };
+
+  const handleEditDish = (dish: Dish) => {
+    setEditDish(dish);
+    setSelectedDish(null);
+    setIsAddModalOpen(true);
+  };
+
   useEffect(() => {
     fetchDishes();
   }, [search]);
@@ -74,7 +92,7 @@ export default function DishPage() {
   return (
     <div className="min-h-screen px-4 py-6 bg-gradient-to-br from-pink-100 via-rose-50 to-yellow-50">
       <h1 className="text-3xl font-extrabold text-center text-rose-500 mb-4">
-        🍓 Choose Your Breakfast
+        🍓 Choose Your Dishes 🍓
       </h1>
 
       <div className="flex justify-center mb-6">
@@ -87,13 +105,18 @@ export default function DishPage() {
         />
       </div>
 
+      {role === "admin" && (
         <button
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={() => {
+            setEditDish(null);
+            setIsAddModalOpen(true);
+          }}
           className="fixed bottom-6 right-6 bg-rose-500 hover:bg-rose-600 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center text-3xl z-50"
           title="Add Dish"
         >
           +
         </button>
+      )}
         
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {dishes.map((dish) => (
@@ -106,7 +129,7 @@ export default function DishPage() {
             onDelete={role === "admin" ? () => deleteDish(dish._id).then(fetchDishes) : undefined}
             chosenDishId={chosenDishId}
             cancelledDishIds={cancelledDishIds}
-            showChooseField={role === "girlfriend" ? true : false}
+            showChooseField={role === "girlfriend"}
           />
         ))}
       </div>
@@ -118,13 +141,19 @@ export default function DishPage() {
           onDishChosen={() => handleDishChosen(selectedDish._id)}
           onCancelChosen={() => handleDishCanceled(selectedDish._id)}
           chosenDishId={chosenDishId}
+          onDelete={() => handleDeleteDish(selectedDish._id)}
+          onEdit={() => handleEditDish(selectedDish)}
         />
       )}
 
       {isAddModalOpen && (
         <AddDishModal
-          onClose={() => setIsAddModalOpen(false)}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditDish(null);
+          }}
           onDishAdded={fetchDishes}
+          initialDish={editDish}
         />
       )}
     </div>

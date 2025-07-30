@@ -1,6 +1,6 @@
 import { Dish, NewDish } from "../types";
 
-const baseUrl = "http://192.168.1.224:3000";
+const baseUrl = "http://192.168.1.195:3000";
 
 export const getDishes = async (search = "") => {
   const res = await fetch(`${baseUrl}/dishes?search=${search}`);
@@ -15,6 +15,18 @@ export async function addDish(dish: NewDish): Promise<Dish> {
   });
   return res.json();
 }
+
+export const updateDish = async (dishId: string, data: any) => {
+  const res = await fetch(`${baseUrl}/dishes/${dishId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) throw new Error("Failed to update dish");
+
+  return res.json();
+};
 
 export const deleteDish = async (id: string) => {
   await fetch(`${baseUrl}/dishes/${id}`, { method: "DELETE" });

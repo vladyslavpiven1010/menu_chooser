@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, Put } from '@nestjs/common';
 import { DishService } from './dish.service';
 import { DishGateway } from './dish.gateway';
 import { NotificationService } from './notification.service';
+import { Dish } from './dish.schema';
 
 @Controller('dishes')
 export class DishController {
@@ -17,7 +18,7 @@ export class DishController {
   }
 
   @Post()
-  create(@Body() body: any) {
+  create(@Body() body: Partial<Dish>) {
     return this.dishService.create(body);
   }
 
@@ -34,6 +35,19 @@ export class DishController {
       const message = `New dish chosen: ${dish.name}`;
       await this.notificationService.create(id, 'choose', message);
       this.dishGateway.sendDishNotification(message);
+    }
+
+    return dish;
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() body: Partial<Dish>) {
+    const dish = await this.dishService.update(id, body);
+
+    if (dish) {
+      const message = `Dish ${dish.name} has been updated`;
+      await this.notificationService.create(id, 'update', message);
+      this.dishGateway.sendDishCancelNotification(id, message);
     }
 
     return dish;

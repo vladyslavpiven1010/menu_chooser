@@ -50,12 +50,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         socketRef.current = io("http://localhost:3000");
 
         socketRef.current.on("connect", () => {
-            console.log("Connected to WebSocket server");
+          console.log("Connected to WebSocket server");
         });
 
         socketRef.current.on("dish", async (data: any) => {
           if (data.type === "dishCancel" && data.dishId) {
-              setCancelledDishIds((prev) => [...prev, data.dishId]);
+            setCancelledDishIds((prev) => [...prev, data.dishId]);
           }
 
           await reloadNotifications();

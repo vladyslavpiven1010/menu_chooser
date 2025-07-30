@@ -25,4 +25,12 @@ export class DishGateway {
       message: `Dish ${message} has been cancelled`,
     });
   }
+
+  sendDishUpdateNotification(dishId: string, message: string) {
+    this.server.emit('dish', {
+      type: 'dishUpdate',
+      dishId,
+      message: `Dish ${message} has been updated`,
+    });
+  }
 }
