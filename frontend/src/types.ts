@@ -16,3 +16,10 @@ export interface NewDish {
   ingredients: string[];
   createdBy: string;
 }
+
+export interface UpdateDish {
+  name?: string;
+  imageUrl?: string;
+  description?: string;
+  ingredients?: string[];
+}

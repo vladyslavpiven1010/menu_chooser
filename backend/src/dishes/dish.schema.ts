@@ -11,7 +11,7 @@ export class Dish {
   @Prop()
   description: string;
 
-  @Prop({ type: [String] })
+  @Prop({ type: [String], required: true })
   ingredients: string[];
 
   @Prop()

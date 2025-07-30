@@ -1,4 +1,4 @@
-const notificationsUrl = "http://192.168.1.195:3000";
+const notificationsUrl = "http://192.168.1.224:3000";
 
 export async function fetchNotifications() {
   const res = await fetch(`${notificationsUrl}/notifications`);

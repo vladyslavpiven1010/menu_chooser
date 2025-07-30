@@ -95,13 +95,13 @@ export default function DishModal({
           <div className="flex gap-2 justify-end mt-2 sm:mt-0">
             <button
               onClick={handleEdit}
-              className="flex items-center gap-1 px-3 py-2 text-sm bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg"
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-green-400 hover:bg-green-500 text-white rounded-lg"
             >
               <PencilIcon className="h-4 w-4" />
             </button>
             <button
               onClick={handleDelete}
-              className="flex items-center gap-1 px-3 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg"
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-[#ff0000] hover:bg-red-500 text-white rounded-lg"
             >
               <TrashIcon className="h-4 w-4" />
             </button>

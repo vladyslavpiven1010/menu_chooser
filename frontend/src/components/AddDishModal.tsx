@@ -48,8 +48,8 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
 
     const { name, imageUrl, description, ingredients, createdBy } = form;
 
-    if (!name || !imageUrl || !description || !ingredients) {
-      alert("Please fill in all fields");
+    if (!name || !ingredients) {
+      alert("Name and ingredients fields are required");
       return;
     }
 
@@ -74,7 +74,6 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
       onClose();
     } catch (err) {
       console.error("Failed to submit dish:", err);
-      alert("Failed to submit dish");
     } finally {
       setLoading(false);
     }
