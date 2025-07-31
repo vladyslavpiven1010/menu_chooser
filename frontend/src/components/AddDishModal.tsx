@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { updateDish, addDish } from "../services/dishApi";
 import { Dish, DishEatTime } from "../types";
+import { EAT_TIMES } from "../pages/DishPage";
 
 interface Props {
   onClose: () => void;
@@ -19,7 +20,6 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
 
   const [loading, setLoading] = useState(false);
   const [eatTimes, setEatTimes] = useState<DishEatTime[]>(initialDish?.eatTime || []);
-  const allTimes: DishEatTime[] = ['breakfast', 'lunch', 'dinner', 'supper'];
 
   const isEdit = !!initialDish;
 
@@ -162,7 +162,7 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
                 }}
               >
                 <option value="">+ Add time</option>
-                {allTimes
+                {EAT_TIMES
                   .filter((t) => !eatTimes.includes(t))
                   .map((t) => (
                     <option key={t} value={t}>

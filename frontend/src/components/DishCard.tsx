@@ -6,7 +6,6 @@ interface DishCardProps {
   onClick: () => void;
   onDisable?: () => void;
   onEnable?: () => void;
-  onDelete?: () => void;
   chosenDishId: string | null;
   cancelledDishIds?: string[];
   showChooseField: boolean;
@@ -17,7 +16,6 @@ export default function DishCard({
   onClick,
   onDisable,
   onEnable,
-  onDelete,
   chosenDishId,
   cancelledDishIds,
   showChooseField
@@ -54,7 +52,7 @@ export default function DishCard({
         {dish.disabledByYouToday ? (
           onEnable && (
             <button
-              className="mt-3 text-sm text-green-500 hover:underline"
+              className="mt-3 text-sm text-green-500"
               onClick={(e) => {
                 e.stopPropagation();
                 onEnable();
@@ -66,7 +64,7 @@ export default function DishCard({
         ) : ( 
           onDisable && (
             <button
-              className="mt-3 text-sm text-yellow-600 hover:underline"
+              className="mt-3 text-sm text-yellow-600"
               onClick={(e) => {
                 e.stopPropagation();
                 onDisable();
@@ -75,17 +73,6 @@ export default function DishCard({
               Disable
             </button>
         ))}
-        { onDelete && (
-          <button
-            className="mt-3 text-sm text-red-600 hover:underline"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            Delete
-          </button>
-        )}
       </div>
     </div>
   );
