@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { updateDish, addDish } from "../services/dishApi";
-import { Dish, DishEatTime } from "../types";
-import { EAT_TIMES } from "../pages/DishPage";
+import { Dish, DishEatTime, EAT_TIMES } from "../types";
 
 interface Props {
   onClose: () => void;

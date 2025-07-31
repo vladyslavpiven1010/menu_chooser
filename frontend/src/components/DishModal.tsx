@@ -56,7 +56,7 @@ export default function DishModal({
         <h2 className="text-2xl font-bold text-pink-600">{dish.name}</h2>
 
         <img
-          src={dish.imageUrl}
+          src={dish.imageUrl || "/default_dish.jpg"}
           alt={dish.name}
           className="w-full h-56 object-cover rounded-lg"
         />
@@ -115,7 +115,7 @@ export default function DishModal({
             </button>
             <button
               onClick={handleDelete}
-              className="flex items-center gap-1 px-3 py-2 text-sm bg-[#ff0000] hover:bg-red-500 text-white rounded-lg"
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-[rgb(255,0,0)] hover:bg-[rgb(225,0,0)] text-white rounded-lg"
             >
               <TrashIcon className="h-4 w-4" />
             </button>

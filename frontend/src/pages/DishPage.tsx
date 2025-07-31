@@ -9,13 +9,11 @@ import {
 } from "../services/dishApi";
 import DishCard from "../components/DishCard";
 import DishModal from "../components/DishModal";
-import { Dish, DishEatTime } from "../types";
+import { Dish, DishEatTime, EAT_TIMES } from "../types";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { useSocket } from "../contexts/SocketContext";
 import AddDishModal from "../components/AddDishModal";
-
-export const EAT_TIMES: DishEatTime[] = ["breakfast", "lunch", "dinner", "supper"];
 
 export default function DishPage() {
   const [search, setSearch] = useState("");

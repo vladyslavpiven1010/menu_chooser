@@ -1,12 +1,13 @@
 export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'supper';
+export const EAT_TIMES: DishEatTime[] = ["breakfast", "lunch", "dinner", "supper"];
 
 export interface Dish {
   _id: string;
   name: string;
-  imageUrl: string;
-  description: string;
+  imageUrl?: string;
+  description?: string;
   ingredients: string[];
-  eatTime: DishEatTime[];
+  eatTime?: DishEatTime[];
   createdBy: string;
   disabledByYouToday?: boolean;
   chosenToday: boolean;
@@ -14,8 +15,8 @@ export interface Dish {
 
 export interface NewDish {
   name: string;
-  imageUrl: string;
-  description: string;
+  imageUrl?: string;
+  description?: string;
   ingredients: string[];
   eatTime: DishEatTime[];
   createdBy: string;

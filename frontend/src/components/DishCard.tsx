@@ -27,16 +27,20 @@ export default function DishCard({
     onClick();
   };
 
+  console.log("Chosen:", isChosen, "Cancelled:", isCancelled, "ID:", dish._id);
+
   return (
     <div
       className={`bg-white p-4 rounded-2xl shadow-md transition hover:shadow-lg cursor-pointer relative
         ${dish.disabledByYouToday ? "opacity-50" : ""}
-        ${isChosen && !isCancelled ? "ring-4 ring-green-400" : ""}
+        ${isChosen && !isCancelled
+          ? "outline outline-2 outline-green-300"
+          : ""}
       `}
       onClick={!dish.disabledByYouToday ? handleClick : undefined}
     >
       <img
-        src={dish.imageUrl}
+        src={dish.imageUrl || "/default_dish.jpg"}
         alt={dish.name}
         className="w-full h-40 object-cover rounded-xl"
       />
