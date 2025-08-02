@@ -27,8 +27,8 @@ export class Dish {
   @Prop({ default: false })
   disabledByYouToday: boolean;
 
-  @Prop({ default: false })
-  chosenToday: boolean;
+  @Prop({ default: null, type: [String, null] })
+  chosenToday: DishEatTime | null;
 }
 
 export const DishSchema = SchemaFactory.createForClass(Dish);

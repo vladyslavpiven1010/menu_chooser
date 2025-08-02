@@ -10,7 +10,7 @@ export interface Dish {
   eatTime?: DishEatTime[];
   createdBy: string;
   disabledByYouToday?: boolean;
-  chosenToday: boolean;
+  chosenToday: DishEatTime | null;
 }
 
 export interface NewDish {

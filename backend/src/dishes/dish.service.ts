@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Dish, DishDocument } from './dish.schema';
+import { Dish, DishDocument, DishEatTime } from './dish.schema';
 
 @Injectable()
 export class DishService {
@@ -29,12 +29,12 @@ export class DishService {
     return this.dishModel.findByIdAndDelete(id);
   }
 
-  async chooseDish(id: string) {
-    return await this.dishModel.findByIdAndUpdate(id, { chosenToday: true }, { new: true });;
+  async chooseDish(id: string, eatTime: DishEatTime) {
+    return await this.dishModel.findByIdAndUpdate(id, { chosenToday: eatTime }, { new: true });;
   }
 
   async cancelDish(id: string) {
-    return this.dishModel.findByIdAndUpdate(id, { chosenToday: false }, { new: true });
+    return this.dishModel.findByIdAndUpdate(id, { chosenToday: null }, { new: true });
   }
 
   async disableDish(id: string) {

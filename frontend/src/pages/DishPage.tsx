@@ -53,14 +53,14 @@ export default function DishPage() {
     );
   };
 
-  const handleDishChosen = async (dishId: string) => {
+  const handleDishChosen = async (dishId: string, eatTime: DishEatTime) => {
     if (chosenDishId) {
       toast.info("You already chose a dish today 🍽️");
       return;
     }
     try {
-      await chooseDish(dishId);
-      toast.success("You chose the dish!");
+      await chooseDish(dishId, eatTime);
+      toast.success(`You chose the dish for ${eatTime}!`);
       setChosenDishId(dishId);
       fetchDishes();
     } catch (err) {
@@ -166,7 +166,7 @@ export default function DishPage() {
         <DishModal
           dish={selectedDish}
           onClose={() => setSelectedDish(null)}
-          onDishChosen={() => handleDishChosen(selectedDish._id)}
+          onDishChosen={(eatTime) => handleDishChosen(selectedDish._id, eatTime)}
           onCancelChosen={() => handleDishCanceled(selectedDish._id)}
           chosenDishId={chosenDishId}
           onDelete={() => handleDeleteDish(selectedDish._id)}

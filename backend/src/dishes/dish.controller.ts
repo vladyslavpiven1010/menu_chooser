@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Param, Body, Query, Put } from '@nestjs/
 import { DishService } from './dish.service';
 import { DishGateway } from './dish.gateway';
 import { NotificationService } from './notification.service';
-import { Dish } from './dish.schema';
+import { Dish, DishEatTime } from './dish.schema';
 
 @Controller('dishes')
 export class DishController {
@@ -28,11 +28,14 @@ export class DishController {
   }
 
   @Post(':id/choose')
-  async choose(@Param('id') id: string) {
-    const dish = await this.dishService.chooseDish(id);
+  async choose(@Param('id') id: string, @Body() body: { eatTime: DishEatTime }) {
+    const { eatTime } = body;
+
+    const dish = await this.dishService.chooseDish(id, eatTime);
 
     if (dish) {
-      const message = `New dish chosen: ${dish.name}`;
+      const message = `New dish chosen: ${dish.name} for ${eatTime}`;
+
       await this.notificationService.create(id, 'choose', message);
       this.dishGateway.sendDishNotification(message);
     }

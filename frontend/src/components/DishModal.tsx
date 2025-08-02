@@ -1,10 +1,12 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import { DishEatTime } from "../types";
 
 interface DishModalProps {
   dish: any;
   onClose: () => void;
-  onDishChosen: () => void;
+  onDishChosen: (eatTime: DishEatTime) => void;
   onCancelChosen: () => void;
   onDelete: (dishId: string) => void;
   onEdit: (dish: any) => void;
@@ -20,14 +22,13 @@ export default function DishModal({
   onEdit,
   chosenDishId,
 }: DishModalProps) {
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    onClose();
-  };
+  const [selectedEatTime, setSelectedEatTime] = useState<DishEatTime | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleChoose = () => {
-    onDishChosen();
-    onClose();
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   const handleDelete = () => {
@@ -38,6 +39,15 @@ export default function DishModal({
   const handleEdit = () => {
     onEdit(dish);
     onClose();
+  };
+
+  const handleChooseClick = () => {
+    if (selectedEatTime) {
+      onDishChosen(selectedEatTime);
+      onClose();
+    } else {
+      setDropdownOpen((prev) => !prev);
+    }
   };
 
   return (
@@ -84,7 +94,7 @@ export default function DishModal({
           </div>
         )}
 
-        <div className="flex justify-between gap-2 flex-col sm:flex-row">
+        <div className="flex justify-between gap-2 flex-row">
           {dish._id === chosenDishId ? (
             <button
               onClick={() => {
@@ -96,17 +106,39 @@ export default function DishModal({
               Cancel your choice ❌
             </button>
           ) : (
-            <button
-              onClick={handleChoose}
-              disabled={!!chosenDishId}
-              className={`text-white font-semibold py-2 px-4 rounded-xl w-full
-                ${chosenDishId ? "bg-gray-400 cursor-not-allowed" : "bg-rose-500 hover:bg-rose-600"}`}
-            >
-              {chosenDishId ? "You already chose a dish today 🍳" : "Choose"}
-            </button>
+            <div className="relative w-full">
+              <button
+                onClick={handleChooseClick}
+                disabled={!!chosenDishId}
+                className={`w-full text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-200
+                  ${chosenDishId ? "bg-gray-400 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600"}`}
+              >
+                {selectedEatTime ? `Choose for ${selectedEatTime} 🍽️` : "Choose"}
+              </button>
+
+              {dropdownOpen && !selectedEatTime && (
+                <div
+                  className="absolute w-full max-h-20 overflow-y-auto bg-white border border-pink-300 rounded-xl shadow-lg z-10 animate-fadeInDropdown"
+                >
+                  {dish.eatTime.map((time: string, idx: number) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setSelectedEatTime(time as DishEatTime);
+                        setDropdownOpen(false);
+                        onDishChosen(time as DishEatTime);
+                      }}
+                      className="px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition-all"
+                    >
+                      {time}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
 
-          <div className="flex gap-2 justify-end mt-2 sm:mt-0">
+          <div className="flex gap-2 justify-end">
             <button
               onClick={handleEdit}
               className="flex items-center gap-1 px-3 py-2 text-sm bg-green-400 hover:bg-green-500 text-white rounded-lg"

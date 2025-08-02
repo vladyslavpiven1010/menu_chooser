@@ -1,4 +1,4 @@
-import { Dish, NewDish, UpdateDish } from "../types";
+import { Dish, DishEatTime, NewDish, UpdateDish } from "../types";
 
 const baseUrl = "http://192.168.1.224:3000";
 
@@ -32,8 +32,14 @@ export const deleteDish = async (id: string) => {
   await fetch(`${baseUrl}/dishes/${id}`, { method: "DELETE" });
 };
 
-export const chooseDish = async (id: string) => {
-  await fetch(`${baseUrl}/dishes/${id}/choose`, { method: "POST" });
+export const chooseDish = async (id: string, eatTime: DishEatTime) => {
+  await fetch(`${baseUrl}/dishes/${id}/choose`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ eatTime }),
+  });
 };
 
 export const cancelDish = async (id: string) => {
