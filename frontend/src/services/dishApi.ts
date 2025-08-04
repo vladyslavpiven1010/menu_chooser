@@ -33,7 +33,6 @@ export const deleteDish = async (id: string) => {
 };
 
 export const chooseDish = async (id: string, eatTime: DishEatTime) => {
-  console.log(id, eatTime)
   await fetch(`${baseUrl}/dishes/${id}/choose`, {
     method: "POST",
     headers: {

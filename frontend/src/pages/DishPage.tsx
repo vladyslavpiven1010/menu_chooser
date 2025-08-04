@@ -25,7 +25,7 @@ export default function DishPage() {
   const [selectedEatTimes, setSelectedEatTimes] = useState<string[]>([]);
   const [chosenPerTime, setChosenPerTime] = useState<Partial<Record<DishEatTime, Dish>>>({});
   const { cancelledDishIds } = useSocket();
-  const [showChosenOnly, setShowChosenOnly] = useState(false);
+  const [showOnlyChosenToday, setShowOnlyChosenToday] = useState(false);
 
   useEffect(() => {
     const savedRole = localStorage.getItem("role") as "girlfriend" | "admin" | null;
@@ -34,16 +34,13 @@ export default function DishPage() {
 
   const fetchDishes = async () => {
     const allDishes = await getDishes(search);
-
-    let filtered = selectedEatTimes.length
-      ? allDishes.filter((d: Dish) =>
-          d.eatTime?.some((t: string) => selectedEatTimes.includes(t))
-        )
-      : allDishes;
-
-    if (showChosenOnly) {
-      filtered = filtered.filter((d: Dish) => d.chosenToday !== null);
-    }
+    const filtered = allDishes.filter((d: Dish) => {
+      const eatTimeMatch = selectedEatTimes.length
+        ? d.eatTime?.some((t: string) => selectedEatTimes.includes(t))
+        : true;
+      const chosenTodayMatch = showOnlyChosenToday ? d.chosenToday !== null : true;
+      return eatTimeMatch && chosenTodayMatch;
+    });
 
     setDishes(filtered);
 
@@ -59,22 +56,11 @@ export default function DishPage() {
 
   const toggleEatTime = (time: string) => {
     setSelectedEatTimes((prev) =>
-      prev.includes(time)
-        ? prev.filter((t) => t !== time)
-        : [...prev, time]
+      prev.includes(time) ? prev.filter((t) => t !== time) : [...prev, time]
     );
   };
 
   const handleDishChosen = async (dishId: string, eatTime: DishEatTime) => {
-    const existing = chosenPerTime[eatTime];
-
-    if (existing && existing._id !== dishId) {
-      const confirmed = window.confirm(
-        `You already chose "${existing.name}" for ${eatTime}. Replace it?`
-      );
-      if (!confirmed) return;
-    }
-
     try {
       await chooseDish(dishId, eatTime);
       toast.success(`Chosen for ${eatTime}!`);
@@ -116,7 +102,7 @@ export default function DishPage() {
 
   useEffect(() => {
     fetchDishes();
-  }, [search, selectedEatTimes, showChosenOnly]);
+  }, [search, selectedEatTimes, showOnlyChosenToday]);
 
   return (
     <div className="min-h-screen px-4 py-6 bg-gradient-to-br from-pink-100 via-rose-50 to-yellow-50">
@@ -149,9 +135,9 @@ export default function DishPage() {
           ))}
 
           <button
-            onClick={() => setShowChosenOnly(!showChosenOnly)}
+            onClick={() => setShowOnlyChosenToday(!showOnlyChosenToday)}
             className={`px-3 py-1 rounded-full border text-sm ${
-              showChosenOnly
+              showOnlyChosenToday
                 ? "bg-green-500 text-white border-green-500"
                 : "bg-white text-green-500 border-green-300"
             } hover:bg-green-100`}

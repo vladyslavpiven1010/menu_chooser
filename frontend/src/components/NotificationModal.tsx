@@ -10,10 +10,13 @@ export default function NotificationModal({ notifications, onClose, onClear }: P
       onClose();
     }
   };
-  
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-start pt-24 z-50" onClick={handleOverlayClick}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-4">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-40 z-[999] flex justify-center items-start pt-24"
+      onClick={handleOverlayClick}
+    >
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-4 z-[1000] relative">
         <h2 className="text-lg font-semibold mb-3">Notifications</h2>
 
         <ul className="space-y-2 max-h-80 overflow-y-auto">
@@ -42,7 +45,6 @@ export default function NotificationModal({ notifications, onClose, onClear }: P
           <button
             onClick={onClose}
             className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600"
-            aria-label="Close notification modal"
           >
             Close
           </button>

@@ -7,13 +7,14 @@ import { DishGateway } from './dish.gateway';
 import { NotificationSchema, Notification } from './notification.schema';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
+import { CronService } from './cron.service';
 
 @Module({
   imports: [MongooseModule.forFeature([
     { name: Dish.name, schema: DishSchema },
     { name: Notification.name, schema: NotificationSchema }
   ])],
-  providers: [DishService, DishGateway, NotificationService],
+  providers: [DishService, DishGateway, NotificationService, CronService],
   controllers: [DishController, NotificationController],
   exports: [DishGateway]
 })

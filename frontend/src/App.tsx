@@ -27,15 +27,16 @@ export default function App() {
 
   return (
     <SocketProvider>
-      <div className="min-h-screen bg-gray-100 p-4 relative">
+      <div className="min-h-screen bg-gray-100 p-4">
         <ToastContainer position="top-right" autoClose={3000} />
-        {role === "admin" && (
-          <div className="absolute top-4 right-4">
-            <NotificationBell />
-          </div>
-        )}
         <DishPage />
       </div>
+
+      {role === "admin" && (
+        <div className="fixed top-4 right-4">
+          <NotificationBell />
+        </div>
+      )}
     </SocketProvider>
   );
 }
