@@ -1,5 +1,5 @@
-export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'supper';
-export const EAT_TIMES: DishEatTime[] = ["breakfast", "lunch", "dinner", "supper"];
+export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+export const EAT_TIMES: DishEatTime[] = ["breakfast", "lunch", "dinner", "snack"];
 
 export interface Dish {
   _id: string;

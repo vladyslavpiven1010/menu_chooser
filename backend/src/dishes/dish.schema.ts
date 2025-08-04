@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type DishDocument = Dish & Document;
-export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'supper' ;
+export type DishEatTime = 'breakfast' | 'lunch' | 'dinner' | 'snack' ;
 
 @Schema({ timestamps: true })
 export class Dish {
@@ -29,7 +29,7 @@ export class Dish {
 
   @Prop({
     type: String,
-    enum: ['breakfast', 'lunch', 'dinner', 'supper'],
+    enum: ['breakfast', 'lunch', 'dinner', 'snack'],
     default: null,
   })
   chosenToday: DishEatTime | null;
