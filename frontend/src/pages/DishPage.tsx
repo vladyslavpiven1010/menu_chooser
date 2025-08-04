@@ -25,6 +25,7 @@ export default function DishPage() {
   const [selectedEatTimes, setSelectedEatTimes] = useState<string[]>([]);
   const [chosenPerTime, setChosenPerTime] = useState<Partial<Record<DishEatTime, Dish>>>({});
   const { cancelledDishIds } = useSocket();
+  const [showChosenOnly, setShowChosenOnly] = useState(false);
 
   useEffect(() => {
     const savedRole = localStorage.getItem("role") as "girlfriend" | "admin" | null;
@@ -33,11 +34,16 @@ export default function DishPage() {
 
   const fetchDishes = async () => {
     const allDishes = await getDishes(search);
-    const filtered = selectedEatTimes.length
+
+    let filtered = selectedEatTimes.length
       ? allDishes.filter((d: Dish) =>
           d.eatTime?.some((t: string) => selectedEatTimes.includes(t))
         )
       : allDishes;
+
+    if (showChosenOnly) {
+      filtered = filtered.filter((d: Dish) => d.chosenToday !== null);
+    }
 
     setDishes(filtered);
 
@@ -110,7 +116,7 @@ export default function DishPage() {
 
   useEffect(() => {
     fetchDishes();
-  }, [search, selectedEatTimes]);
+  }, [search, selectedEatTimes, showChosenOnly]);
 
   return (
     <div className="min-h-screen px-4 py-6 bg-gradient-to-br from-pink-100 via-rose-50 to-yellow-50">
@@ -127,7 +133,7 @@ export default function DishPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="flex gap-2 flex-wrap justify-center">
+        <div className="flex gap-2 flex-wrap justify-center mb-2">
           {EAT_TIMES.map((time) => (
             <button
               key={time}
@@ -141,6 +147,17 @@ export default function DishPage() {
               {time}
             </button>
           ))}
+
+          <button
+            onClick={() => setShowChosenOnly(!showChosenOnly)}
+            className={`px-3 py-1 rounded-full border text-sm ${
+              showChosenOnly
+                ? "bg-green-500 text-white border-green-500"
+                : "bg-white text-green-500 border-green-300"
+            } hover:bg-green-100`}
+          >
+            Showing Chosen
+          </button>
         </div>
       </div>
 
