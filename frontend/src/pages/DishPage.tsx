@@ -19,12 +19,11 @@ export default function DishPage() {
   const [search, setSearch] = useState("");
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
-  const [chosenDishId, setChosenDishId] = useState<string | null>(null);
   const [role, setRole] = useState<"girlfriend" | "admin" | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editDish, setEditDish] = useState<Dish | null>(null);
   const [selectedEatTimes, setSelectedEatTimes] = useState<string[]>([]);
-
+  const [chosenPerTime, setChosenPerTime] = useState<Partial<Record<DishEatTime, Dish>>>({});
   const { cancelledDishIds } = useSocket();
 
   useEffect(() => {
@@ -41,8 +40,15 @@ export default function DishPage() {
       : allDishes;
 
     setDishes(filtered);
-    const chosen = filtered.find((d: Dish) => d.chosenToday);
-    setChosenDishId(chosen ? chosen._id : null);
+
+    const chosenMap: Partial<Record<DishEatTime, Dish>> = {};
+    filtered.forEach((d: Dish) => {
+      if (d.chosenToday) {
+        chosenMap[d.chosenToday] = d;
+      }
+    });
+
+    setChosenPerTime(chosenMap);
   };
 
   const toggleEatTime = (time: string) => {
@@ -54,16 +60,20 @@ export default function DishPage() {
   };
 
   const handleDishChosen = async (dishId: string, eatTime: DishEatTime) => {
-    if (chosenDishId) {
-      toast.info("You already chose a dish today 🍽️");
-      return;
+    const existing = chosenPerTime[eatTime];
+
+    if (existing && existing._id !== dishId) {
+      const confirmed = window.confirm(
+        `You already chose "${existing.name}" for ${eatTime}. Replace it?`
+      );
+      if (!confirmed) return;
     }
+
     try {
       await chooseDish(dishId, eatTime);
-      toast.success(`You chose the dish for ${eatTime}!`);
-      setChosenDishId(dishId);
+      toast.success(`Chosen for ${eatTime}!`);
       fetchDishes();
-    } catch (err) {
+    } catch (err: any) {
       toast.error("Failed to choose dish");
       console.error(err);
     }
@@ -72,10 +82,10 @@ export default function DishPage() {
   const handleDishCanceled = async (dishId: string) => {
     try {
       await cancelDish(dishId);
-      setChosenDishId(null);
-      toast.success("Dish choice has been canceled");
+      toast.success("Dish choice canceled");
+      fetchDishes();
     } catch (err) {
-      toast.error("Failed to cancel dish choice");
+      toast.error("Failed to cancel dish");
       console.error(err);
     }
   };
@@ -155,9 +165,8 @@ export default function DishPage() {
             onClick={() => setSelectedDish(dish)}
             onDisable={role === "admin" ? () => disableDish(dish._id).then(fetchDishes) : undefined}
             onEnable={role === "admin" ? () => enableDish(dish._id).then(fetchDishes) : undefined}
-            chosenDishId={chosenDishId}
             cancelledDishIds={cancelledDishIds}
-            showChooseField={role === "girlfriend"}
+            chosenPerTime={chosenPerTime}
           />
         ))}
       </div>
@@ -168,7 +177,7 @@ export default function DishPage() {
           onClose={() => setSelectedDish(null)}
           onDishChosen={(eatTime) => handleDishChosen(selectedDish._id, eatTime)}
           onCancelChosen={() => handleDishCanceled(selectedDish._id)}
-          chosenDishId={chosenDishId}
+          chosenPerTime={chosenPerTime}
           onDelete={() => handleDeleteDish(selectedDish._id)}
           onEdit={() => handleEditDish(selectedDish)}
         />

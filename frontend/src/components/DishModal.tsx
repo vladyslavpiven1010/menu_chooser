@@ -1,16 +1,15 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { DishEatTime } from "../types";
+import { Dish, DishEatTime } from "../types";
 
 interface DishModalProps {
-  dish: any;
+  dish: Dish;
   onClose: () => void;
   onDishChosen: (eatTime: DishEatTime) => void;
-  onCancelChosen: () => void;
+  onCancelChosen: (eatTime: DishEatTime) => void;
   onDelete: (dishId: string) => void;
   onEdit: (dish: any) => void;
-  chosenDishId: string | null;
+  chosenPerTime: Partial<Record<DishEatTime, Dish>>;
 }
 
 export default function DishModal({
@@ -20,7 +19,7 @@ export default function DishModal({
   onCancelChosen,
   onDelete,
   onEdit,
-  chosenDishId,
+  chosenPerTime,
 }: DishModalProps) {
   const [selectedEatTime, setSelectedEatTime] = useState<DishEatTime | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -49,6 +48,10 @@ export default function DishModal({
       setDropdownOpen((prev) => !prev);
     }
   };
+
+  const alreadyChosenTimes = Object.entries(chosenPerTime).filter(
+    ([_, d]) => d._id === dish._id
+  ) as [DishEatTime, Dish][];
 
   return (
     <div
@@ -80,10 +83,10 @@ export default function DishModal({
           ))}
         </ul>
 
-        {dish.eatTime?.length > 0 && (
+        {dish.eatTime!.length > 0 && (
           <div className="text-gray-700 mb-2">
             <span className="font-semibold text-gray-800">Fits for: </span>
-            {dish.eatTime.map((time: string, idx: number) => (
+            {dish.eatTime!.map((time: string, idx: number) => (
               <span
                 key={idx}
                 className="inline-block bg-pink-100 text-pink-700 text-sm font-medium px-2 py-1 rounded-full mr-1"
@@ -95,10 +98,10 @@ export default function DishModal({
         )}
 
         <div className="flex justify-between gap-2 flex-row">
-          {dish._id === chosenDishId ? (
+          {alreadyChosenTimes.length > 0 ? (
             <button
               onClick={() => {
-                onCancelChosen();
+                alreadyChosenTimes.forEach(([time]) => onCancelChosen(time));
                 onClose();
               }}
               className="w-full text-sm text-rose-500 border border-rose-300 rounded-lg py-2 hover:bg-rose-100 transition-all"
@@ -109,30 +112,41 @@ export default function DishModal({
             <div className="relative w-full">
               <button
                 onClick={handleChooseClick}
-                disabled={!!chosenDishId}
-                className={`w-full text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-200
-                  ${chosenDishId ? "bg-gray-400 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600"}`}
+                className="w-full text-white font-semibold py-2 px-4 rounded-xl text-center transition-all duration-200 bg-pink-500 hover:bg-pink-600"
               >
                 {selectedEatTime ? `Choose for ${selectedEatTime} 🍽️` : "Choose"}
               </button>
 
               {dropdownOpen && !selectedEatTime && (
-                <div
-                  className="absolute w-full max-h-20 overflow-y-auto bg-white border border-pink-300 rounded-xl shadow-lg z-10 animate-fadeInDropdown"
-                >
-                  {dish.eatTime.map((time: string, idx: number) => (
-                    <div
-                      key={idx}
-                      onClick={() => {
-                        setSelectedEatTime(time as DishEatTime);
-                        setDropdownOpen(false);
-                        onDishChosen(time as DishEatTime);
-                      }}
-                      className="px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition-all"
-                    >
-                      {time}
-                    </div>
-                  ))}
+                <div className="absolute w-full max-h-20 overflow-y-auto bg-white border border-pink-300 rounded-xl shadow-lg z-10 animate-fadeInDropdown">
+                  {dish.eatTime!.map((time: DishEatTime, idx: number) => {
+                    const alreadyChosenDish = chosenPerTime[time];
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          if (
+                            alreadyChosenDish &&
+                            alreadyChosenDish._id !== dish._id
+                          ) {
+                            const confirmReplace = window.confirm(
+                              `You have already chosen "${alreadyChosenDish.name}" for ${time}. Do you want to replace it with "${dish.name}"?`
+                            );
+                            if (!confirmReplace) return;
+                          }
+
+                          setSelectedEatTime(time);
+                          setDropdownOpen(false);
+                          onDishChosen(time);
+                          onClose();
+                        }}
+                        className="px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 cursor-pointer transition-all"
+                      >
+                        {time}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

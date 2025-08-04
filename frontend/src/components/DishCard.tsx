@@ -1,4 +1,4 @@
-import { Dish } from "../types";
+import { Dish, DishEatTime } from "../types";
 import 'react-toastify/dist/ReactToastify.css';
 
 interface DishCardProps {
@@ -6,9 +6,8 @@ interface DishCardProps {
   onClick: () => void;
   onDisable?: () => void;
   onEnable?: () => void;
-  chosenDishId: string | null;
+  chosenPerTime: Partial<Record<DishEatTime, Dish>>;
   cancelledDishIds?: string[];
-  showChooseField: boolean;
 }
 
 export default function DishCard({
@@ -16,39 +15,34 @@ export default function DishCard({
   onClick,
   onDisable,
   onEnable,
-  chosenDishId,
-  cancelledDishIds,
-  showChooseField
+  chosenPerTime,
+  cancelledDishIds
 }: DishCardProps) {
-  const isChosen = dish._id === chosenDishId;
   const isCancelled = cancelledDishIds?.includes(dish._id);
+  const chosenSlot = (Object.entries(chosenPerTime) as [DishEatTime, Dish][]).find(
+    ([, chosenDish]) => chosenDish._id === dish._id
+  )?.[0];
 
-  const handleClick = () => {
-    onClick();
-  };
-
-  console.log("Chosen:", isChosen, "Cancelled:", isCancelled, "ID:", dish._id);
+  const isChosen = !!chosenSlot && !isCancelled;
 
   return (
     <div
       className={`bg-white p-4 rounded-2xl shadow-md transition hover:shadow-lg cursor-pointer relative
-        ${dish.disabledByYouToday ? "opacity-50" : ""}
-        ${isChosen && !isCancelled
-          ? "outline outline-2 outline-green-300"
-          : ""}
+        ${dish.disabledByYouToday ? "opacity-50 cursor-not-allowed" : ""}
+        ${isChosen ? "outline outline-2 outline-green-300" : ""}
       `}
-      onClick={!dish.disabledByYouToday ? handleClick : undefined}
+      onClick={!dish.disabledByYouToday ? onClick : undefined}
     >
       <img
         src={dish.imageUrl || "/default_dish.jpg"}
         alt={dish.name}
-        className="w-full h-40 object-cover rounded-xl"
+        className="w-full h-40 object-cover rounded-xl mb-2"
       />
       <h2 className="text-xl font-semibold text-pink-600 truncate">{dish.name}</h2>
 
-      {isChosen && !isCancelled && showChooseField && (
+      {isChosen && (
         <span className="absolute bottom-2 right-3 bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
-          You chose this 🥗
+          You chose for {chosenSlot} 🥗
         </span>
       )}
 
@@ -65,7 +59,7 @@ export default function DishCard({
               Enable
             </button>
           )
-        ) : ( 
+        ) : (
           onDisable && (
             <button
               className="mt-3 text-sm text-yellow-600"
@@ -76,7 +70,8 @@ export default function DishCard({
             >
               Disable
             </button>
-        ))}
+          )
+        )}
       </div>
     </div>
   );

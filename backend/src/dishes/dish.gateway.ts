@@ -12,7 +12,6 @@ export class DishGateway {
   server: Server;
 
   sendDishNotification(message: string) {
-    console.log(message)
     this.server.emit('dish', {
       type: 'dishChosen',
       message: `New dish chosen: ${message}`,

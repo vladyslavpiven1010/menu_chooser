@@ -27,7 +27,11 @@ export class Dish {
   @Prop({ default: false })
   disabledByYouToday: boolean;
 
-  @Prop({ default: null, type: [String, null] })
+  @Prop({
+    type: String,
+    enum: ['breakfast', 'lunch', 'dinner', 'supper'],
+    default: null,
+  })
   chosenToday: DishEatTime | null;
 }
 

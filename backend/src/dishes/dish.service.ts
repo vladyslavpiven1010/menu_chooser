@@ -30,7 +30,16 @@ export class DishService {
   }
 
   async chooseDish(id: string, eatTime: DishEatTime) {
-    return await this.dishModel.findByIdAndUpdate(id, { chosenToday: eatTime }, { new: true });;
+    await this.dishModel.updateMany(
+      { chosenToday: eatTime },
+      { $set: { chosenToday: null } }
+    );
+
+    return this.dishModel.findByIdAndUpdate(
+      id,
+      { $set: { chosenToday: eatTime } },
+      { new: true }
+    );
   }
 
   async cancelDish(id: string) {
