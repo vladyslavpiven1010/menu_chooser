@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { updateDish, addDish } from "../services/dishApi";
 import { Dish, DishEatTime, EAT_TIMES } from "../types";
-import Modal from "./modal";
+import Modal from "./Modal";
 
 interface Props {
   onClose: () => void;

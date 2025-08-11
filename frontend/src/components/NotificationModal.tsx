@@ -1,4 +1,4 @@
-import Modal from "./modal";
+import Modal from "./Modal";
 
 interface Props {
   notifications: {message: string, createdAt: string}[];

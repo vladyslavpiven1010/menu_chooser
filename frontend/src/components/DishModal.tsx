@@ -1,7 +1,8 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Dish, DishEatTime } from "../types";
-import Modal from "./modal";
+import Modal from "./Modal";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface DishModalProps {
   dish: Dish;
@@ -24,6 +25,10 @@ export default function DishModal({
 }: DishModalProps) {
   const [selectedEatTime, setSelectedEatTime] = useState<DishEatTime | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [confirmData, setConfirmData] = useState<{
+    time: DishEatTime;
+    alreadyChosenName: string;
+  } | null>(null);
 
   const handleDelete = () => {
     onDelete(dish._id);
@@ -103,23 +108,20 @@ export default function DishModal({
 
               {dropdownOpen && !selectedEatTime && (
                 <div className="absolute w-full max-h-20 overflow-y-auto bg-white border border-pink-300 rounded-xl shadow-lg z-10 animate-fadeInDropdown">
-                  {dish.eatTime!.map((time: DishEatTime, idx: number) => {
+                  {dish.eatTime!.map((time, idx) => {
                     const alreadyChosenDish = chosenPerTime[time];
 
                     return (
                       <div
                         key={idx}
                         onClick={() => {
-                          if (
-                            alreadyChosenDish &&
-                            alreadyChosenDish._id !== dish._id
-                          ) {
-                            const confirmReplace = window.confirm(
-                              `You have already chosen "${alreadyChosenDish.name}" for ${time}. Do you want to replace it with "${dish.name}"?`
-                            );
-                            if (!confirmReplace) return;
+                          if (alreadyChosenDish && alreadyChosenDish._id !== dish._id) {
+                            setConfirmData({
+                              time,
+                              alreadyChosenName: alreadyChosenDish.name,
+                            });
+                            return;
                           }
-
                           setSelectedEatTime(time);
                           setDropdownOpen(false);
                           onDishChosen(time);
@@ -133,6 +135,22 @@ export default function DishModal({
                   })}
                 </div>
               )}
+
+              <ConfirmModal
+                isOpen={!!confirmData}
+                onClose={() => setConfirmData(null)}
+                onConfirm={() => {
+                  if (!confirmData) return;
+                  setSelectedEatTime(confirmData.time);
+                  setDropdownOpen(false);
+                  onDishChosen(confirmData.time);
+                  onClose();
+                }}
+                title="Replace selected dish?"
+                message={`You have already chosen "${confirmData?.alreadyChosenName}" for ${confirmData?.time}. Do you want to replace it with "${dish.name}"?`}
+                confirmText="Replace"
+                cancelText="Keep"
+              />
             </div>
           )}
 
