@@ -1,6 +1,7 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Dish, DishEatTime } from "../types";
+import Modal from "./modal";
 
 interface DishModalProps {
   dish: Dish;
@@ -23,12 +24,6 @@ export default function DishModal({
 }: DishModalProps) {
   const [selectedEatTime, setSelectedEatTime] = useState<DishEatTime | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
 
   const handleDelete = () => {
     onDelete(dish._id);
@@ -54,18 +49,7 @@ export default function DishModal({
   ) as [DishEatTime, Dish][];
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={handleOverlayClick}
-    >
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full relative animate-fadeIn flex flex-col gap-2">
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
-        >
-          ✕
-        </button>
-
+    <Modal isOpen={true} onClose={onClose} className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold text-pink-600">{dish.name}</h2>
 
         <img
@@ -167,7 +151,6 @@ export default function DishModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

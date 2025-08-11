@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { updateDish, addDish } from "../services/dishApi";
 import { Dish, DishEatTime, EAT_TIMES } from "../types";
+import Modal from "./modal";
 
 interface Props {
   onClose: () => void;
@@ -41,12 +42,6 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
     }
   }, [initialDish]);
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,18 +80,7 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={handleOverlayClick}
-    >
-      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md relative animate-fadeIn box-border">
-        <button
-          className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
-          onClick={onClose}
-        >
-          ✕
-        </button>
-
+    <Modal isOpen={true} onClose={onClose}>
         <h2 className="text-xl font-bold text-center text-rose-500 mb-4">
           {isEdit ? "Edit Dish" : "Add New Dish"}
         </h2>
@@ -182,7 +166,6 @@ export default function AddDishModal({ onClose, onDishAdded, initialDish }: Prop
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -11,6 +11,10 @@
   }
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 .animate-fadeInDropdown {
   animation: fadeInDropdown 0.2s ease-out;
 }

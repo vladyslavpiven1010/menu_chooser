@@ -1,3 +1,5 @@
+import Modal from "./modal";
+
 interface Props {
   notifications: {message: string, createdAt: string}[];
   onClose: () => void;
@@ -5,19 +7,9 @@ interface Props {
 }
 
 export default function NotificationModal({ notifications, onClose, onClear }: Props) {
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-40 z-[999] flex justify-center items-start pt-24"
-      onClick={handleOverlayClick}
-    >
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-4 z-[1000] relative">
-        <h2 className="text-lg font-semibold mb-3">Notifications</h2>
+    <Modal isOpen={true} onClose={onClose}>
+        <h2 className="text-2xl font-bold text-pink-600 mb-4">Notifications</h2>
 
         <ul className="space-y-2 max-h-80 overflow-y-auto">
           {notifications.length === 0 ? (
@@ -34,22 +26,14 @@ export default function NotificationModal({ notifications, onClose, onClear }: P
           )}
         </ul>
 
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-end mt-4">
           <button
             onClick={onClear}
             className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400"
           >
             Clear History
           </button>
-
-          <button
-            onClick={onClose}
-            className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600"
-          >
-            Close
-          </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

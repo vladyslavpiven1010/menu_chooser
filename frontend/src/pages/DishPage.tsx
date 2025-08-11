@@ -34,6 +34,14 @@ export default function DishPage() {
 
   const fetchDishes = async () => {
     const allDishes = await getDishes(search);
+    const chosenMap: Partial<Record<DishEatTime, Dish>> = {};
+    allDishes.forEach((d: Dish) => {
+      if (d.chosenToday) {
+        chosenMap[d.chosenToday] = d;
+      }
+    });
+    setChosenPerTime(chosenMap);
+
     const filtered = allDishes.filter((d: Dish) => {
       const eatTimeMatch = selectedEatTimes.length
         ? d.eatTime?.some((t: string) => selectedEatTimes.includes(t))
@@ -43,15 +51,6 @@ export default function DishPage() {
     });
 
     setDishes(filtered);
-
-    const chosenMap: Partial<Record<DishEatTime, Dish>> = {};
-    filtered.forEach((d: Dish) => {
-      if (d.chosenToday) {
-        chosenMap[d.chosenToday] = d;
-      }
-    });
-
-    setChosenPerTime(chosenMap);
   };
 
   const toggleEatTime = (time: string) => {
@@ -192,7 +191,10 @@ export default function DishPage() {
             setIsAddModalOpen(false);
             setEditDish(null);
           }}
-          onDishAdded={fetchDishes}
+          onDishAdded={() => {
+            fetchDishes();
+            setSelectedDish(null);
+          }}
           initialDish={editDish}
         />
       )}
